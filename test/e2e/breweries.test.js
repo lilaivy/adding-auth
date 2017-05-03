@@ -20,16 +20,16 @@ describe('breweries api', () => {
         neighborhood: 'Woodlawn',
         specialties: ['pilsner', 'ipa', 'seasonal'],
     };
-    // let fakeBrewery2 = {
-    //     name: 'Cascade',
-    //     neighborhood: 'Buckman',
-    //     specialties: ['sours', 'seasonal'],
-    // };
-    // let fakeBrewery3 = {
-    //     name: 'Commons',
-    //     neighborhood: 'Central SE',
-    //     specialties: ['farmhouse', 'saizon'],
-    // };
+    let fakeBrewery2 = {
+        name: 'Cascade',
+        neighborhood: 'Buckman',
+        specialties: ['sours', 'seasonal'],
+    };
+    let fakeBrewery3 = {
+        name: 'Commons',
+        neighborhood: 'Central SE',
+        specialties: ['farmhouse', 'saizon'],
+    };
 
     function saveBrewery(brewery) {
         return request
@@ -52,6 +52,47 @@ describe('breweries api', () => {
                 assert.deepEqual(gotBrewery, fakeBrewery1);
             });
     });
+
+    it('GET returns 404 for non-existent id', () => {
+        const fakeId = '5201103b8896909da4402997';
+        return request.get(`/api/breweries/${fakeId}`)
+            .then(
+            () => { throw new Error('expected 404'); },
+            res => {
+                assert.equal(res.status, 404);
+            }
+            );
+    });
+
+    it('returns list of all brweries', () => {
+        return Promise.all([
+            saveBrewery(fakeBrewery2),
+            saveBrewery(fakeBrewery3)
+        ])
+            .then(savedBrewery => {
+                fakeBrewery2 = savedBrewery[0];
+                fakeBrewery3 = savedBrewery[1];
+            })
+            .then(() => request.get('/api/breweries'))
+            .then(res => res.body)
+            .then(breweries => {
+                assert.equal(breweries.length, 3);
+                function test(fakeBrewery) {
+                    assert.include(breweries, {
+                        name: fakeBrewery.name,
+                        _id: fakeBrewery._id,
+                        neighborhood: fakeBrewery.neighborhood,
+                        specialties: fakeBrewery.specialties,
+                    });
+                }
+
+                test(fakeBrewery1);
+                test(fakeBrewery2);
+                test(fakeBrewery3);
+            });
+    });
+
+
 
 
 
