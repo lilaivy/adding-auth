@@ -1,7 +1,7 @@
 const assert = require('chai').assert;
 const User = require('../../lib/models/user');
 
-describe.only('user model', () => {
+describe('user model', () => {
 
     it('new user generates hash', () => {
         const user = new User({
