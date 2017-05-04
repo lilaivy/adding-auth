@@ -20,7 +20,6 @@ describe('auth', () => {
                 .then(
                 () => { throw new Error('status should not be okay'); },
                 res => {
-                    console.log('response', res);
                     assert.equal(res.status, code);
                     assert.equal(res.response.body.error, error);
                 }
