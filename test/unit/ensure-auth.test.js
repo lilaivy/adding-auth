@@ -3,7 +3,7 @@ const assert = require('chai').assert;
 const ensureAuth = require('../../lib/auth/ensure-auth')();
 const tokenService = require('../../lib/auth/token-service');
 
-describe.only('ensure auth middleware', () => {
+describe('ensure auth middleware', () => {
 
     it('routes to error handler when no token found in Authorization header', done => {
         const req = {
@@ -33,9 +33,9 @@ describe.only('ensure auth middleware', () => {
 
     });
 
-//QUESTION: I don't understand this test
+    //QUESTION: I don't understand this test
     it('calls next on valid Authorization', done => {
-        const payload = { _id: '123', email: 'me@me.com' }; 
+        const payload = { _id: '123', email: 'me@me.com' };
         tokenService.sign(payload)
             .then(token => {
                 const req = {
