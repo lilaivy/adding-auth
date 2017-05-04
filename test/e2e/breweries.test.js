@@ -1,4 +1,4 @@
-const db = require('./_db');
+const db = require('./db');
 const request = require('./_request');
 const assert = require('chai').assert;
 

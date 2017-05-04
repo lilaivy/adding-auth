@@ -1,4 +1,4 @@
-const db = require('./_db');
+const db = require('./db');
 const request = require('./_request');
 const assert = require('chai').assert;
 
@@ -26,47 +26,47 @@ describe('auth', () => {
                 }
                 );
 
-        it.only('signup requires email', () => {
-            return badRequest('api/auth/signup', { password: 'now' }, 400, 'email and password must be supplied');
+        it('signup requires email', () => {
+            return badRequest('/api/auth/signup', { password: 'now' }, 400, 'email and password must be supplied');
         });
 
         it('signup requires password', () => {
-            return badRequest('api/auth/signup', { email: 'me@me.com' }, 400, 'email and password must be supplied');
+            return badRequest('/api/auth/signup', { email: 'me@me.com' }, 400, 'email and password must be supplied');
         });
 
         let token = '';
 
         it('signup', () => {
             return request
-                .post('api/auth/signup')
+                .post('/api/auth/signup')
                 .send(user)
                 .then(res => assert.ok(token = res.body.token));
         });
 
         it('can\'t use same email', () => {
-            return badRequest('api/auth/signup', user, 400, 'email user already exists');
+            return badRequest('/api/auth/signup', user, 400, 'email user already exists');
         });
 
 
         it('signin requires email', () => {
-            return badRequest('api/auth/signin', { password: 'now' }, 400, 'email and password must be supplied');
+            return badRequest('/api/auth/signin', { password: 'now' }, 400, 'email and password must be supplied');
         });
 
         it('signin requires password', () => {
-            return badRequest('api/auth/signin', { email: 'me@me.com' }, 400, 'email and password must be supplied');
+            return badRequest('/api/auth/signin', { email: 'me@me.com' }, 400, 'email and password must be supplied');
         });
 
         it('signin with wrong user', () => {
-            return badRequest('api/auth/signin', { email: 'notme@me.com', password: user.password }, 401, 'invalid username or password');
+            return badRequest('/api/auth/signin', { email: 'notme@me.com', password: user.password }, 401, 'invalid username or password');
         });
 
         it('signin with wrong password', () => {
-            return badRequest('api/auth/signin', { email: user.email, password: 'notNow' }, 401, 'invalid username or password');
+            return badRequest('/api/auth/signin', { email: user.email, password: 'notNow' }, 401, 'invalid username or password');
         });
 
         it('signin', () => {
             return request
-                .post('api/auth/signin')
+                .post('/api/auth/signin')
                 .send(user)
                 .then(res => assert.ok(res.body.token));
         });
@@ -74,7 +74,7 @@ describe('auth', () => {
 
         it('token is invalid', () => {
             return request
-                .get('api/auth/verify')
+                .get('/api/auth/verify')
                 .set('Authorization', 'bad token')
                 .then(
                 () => { throw new Error('success response not expected'); },
@@ -83,7 +83,7 @@ describe('auth', () => {
 
         it('token is valid', () => {
             return request
-                .get('api/auth/verify')
+                .get('/api/auth/verify')
                 .set('Authorization', token)
                 .then(res => assert.ok(res.body));
         });
