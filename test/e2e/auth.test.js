@@ -35,12 +35,18 @@ describe('auth', () => {
 
         let token = '';
 
-        it('signup', () => {
+        it('signup to get token', () => {
             return request
                 .post('/api/auth/signup')
                 .send(user)
-                .then(res => assert.ok(token = res.body.token));
+                .then(res => {
+                    token = res.body.token;
+                    assert.ok(token = res.body.token);
+
+                });
         });
+
+        //now I have token so proceed with token
 
         it('can\'t use same email', () => {
             return badRequest('/api/auth/signup', user, 400, 'email user already exists');
@@ -63,7 +69,7 @@ describe('auth', () => {
             return badRequest('/api/auth/signin', { email: user.email, password: 'notNow' }, 401, 'invalid username or password');
         });
 
-        it('signin', () => {
+        it('signin with token', () => {
             return request
                 .post('/api/auth/signin')
                 .send(user)
@@ -74,7 +80,7 @@ describe('auth', () => {
         it('token is invalid', () => {
             return request
                 .get('/api/auth/verify')
-                .set('Authorization', 'bad token')
+                .set('Authorization', 'bad token') //QESTION: look up .set, where does it come from?
                 .then(
                 () => { throw new Error('success response not expected'); },
                 (res) => { assert.equal(res.status, 401); });
@@ -92,9 +98,9 @@ describe('auth', () => {
 
     describe('unauthorized', () => {
 
-        it('401 with no token', () => {
+        it('401 with no token', () => { //TODO: test not passing "Error: status should not be 200"
             return request
-                .get('/breweries')
+                .get('/api/breweries')
                 .then(
                 () => { throw new Error('status should not be 200'); },
                 res => {
@@ -104,9 +110,9 @@ describe('auth', () => {
                 );
         });
 
-        it('403 with invalid token', () => {
+        it('403 with invalid token', () => { //TODO: test not passing "Error: status should not be 200"
             return request
-                .get('/breweries')
+                .get('/api/breweries')
                 .set('Authorization', 'badtoken')
                 .then(
                 () => { throw new Error('status should not be 200'); },
