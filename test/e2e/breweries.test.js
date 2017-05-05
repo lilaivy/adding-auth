@@ -17,23 +17,11 @@ describe('breweries api', () => {
 
     });
 
-    function seedData(url, data) {
-        return request.post(url).send(data).set('Authorization', token);
-
-    }
-
-    let brewery;
-    before(() => {
-        seedData('/api/breweries', { name: 'Migration', neighborhood: 'Kerns' });
-    })
-        .then(results => results.map(res => res.body))
-        .then(bodies => {
-            brewery = bodies;
-        });
 
     it('initial /GET returns empty list', () => {
         return request
             .get('/api/breweries')
+            .set('Authorization', token)
             .then(res => {
                 const breweries = res.body;
                 assert.deepEqual(breweries, []);
@@ -59,6 +47,7 @@ describe('breweries api', () => {
     function saveBrewery(brewery) {
         return request
             .post('/api/breweries')
+            .set('Authorization', token)
             .send(brewery)
             .then(res => res.body);
     }
@@ -70,7 +59,8 @@ describe('breweries api', () => {
                 fakeBrewery1 = savedBrewery;
             })
             .then(() => {
-                return request.get(`/api/breweries/${fakeBrewery1._id}`);
+                return request.get(`/api/breweries/${fakeBrewery1._id}`)
+                    .set('Authorization', token);
             })
             .then(res => res.body)
             .then(gotBrewery => {
@@ -81,6 +71,7 @@ describe('breweries api', () => {
     it('GET returns 404 for non-existent id', () => {
         const fakeId = '5201103b8896909da4402997';
         return request.get(`/api/breweries/${fakeId}`)
+            .set('Authorization', token)
             .then(
             () => { throw new Error('expected 404'); },
             res => {
@@ -98,10 +89,11 @@ describe('breweries api', () => {
                 fakeBrewery2 = savedBrewery[0];
                 fakeBrewery3 = savedBrewery[1];
             })
-            .then(() => request.get('/api/breweries'))
+            .then(() => request.get('/api/breweries').set('Authorization', token))
             .then(res => res.body)
             .then(breweries => {
                 assert.equal(breweries.length, 3);
+
                 function test(fakeBrewery) {
                     assert.include(breweries, {
                         name: fakeBrewery.name,
@@ -116,4 +108,6 @@ describe('breweries api', () => {
                 test(fakeBrewery3);
             });
     });
+
+});
 
